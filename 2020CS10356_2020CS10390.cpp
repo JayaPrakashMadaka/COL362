@@ -1,13 +1,13 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
 using namespace std;
 
-const int SIZE = 26;
+const int SIZE = 128;
 
 struct TrieNode
 {
   struct TrieNode *children[SIZE];
   int count;
-  int index;
   bool end;
 
   TrieNode()
@@ -16,45 +16,43 @@ struct TrieNode
             children[i] = NULL;
       }
       count = 0;
-      index = -1;
       end = false;
     }
 };
 
-void insert(struct TrieNode *root,string key,int index) {
+void insert(struct TrieNode *root,string key) {
   struct TrieNode *ptr = root;
   for(int i=0;i<key.size();i++){
-    if(!ptr->children[key[i]-'a']){
-      ptr->children[key[i]-'a'] = new TrieNode();
+    if(!ptr->children[key[i]]){
+      ptr->children[key[i]] = new TrieNode();
     }
-    ptr = ptr->children[key[i]-'a'];
+    ptr = ptr->children[key[i]];
   }
   ptr->end = true;
   ptr->count++;
-  ptr->index = index;
 }
 
 bool search(struct TrieNode *root, string key){
     struct TrieNode *ptr = root;
     for (int i = 0; i < key.size(); i++){
-        if (!ptr->children[key[i]-'a']){
+        if (!ptr->children[key[i]]){
             return false;
         }
-        ptr = ptr->children[key[i]-'a'];
+        ptr = ptr->children[key[i]];
     }
     return ptr->end;
 }
 
-void preorder(TrieNode* node, string arr[]){
+void preorder(TrieNode* node, string arr){
   if (node != NULL){
     for (int i = 0; i < SIZE; i++) {
       if(node->children[i] != NULL) {
         if(node->children[i]->end){
           for(int j=0;j<node->children[i]->count;j++){
-            cout << arr[node->children[i]->index] << "\n";
+            cout << arr+string(1,(char)(i)) << "\n";
           }
         }
-        preorder(node->children[i], arr);
+        preorder(node->children[i], arr+string(1,(char)(i)));
       }
     }
   }
@@ -64,8 +62,8 @@ void printSorted(string arr[], int n)
 {
     TrieNode* root = new TrieNode();
     for (int i = 0; i < n; i++)
-        insert(root, arr[i], i);
-    preorder(root, arr);
+        insert(root, arr[i]);
+    preorder(root, "");
 }
 
 
@@ -73,7 +71,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
-  string arr[] = { "abc", "xy", "bcd" ,"abc","ahvs"};
+  string arr[] = { "abcA", "!xy", "*bcd" ,"@abc","ahvs","@abc"};
   int n = sizeof(arr) / sizeof(arr[0]);
   printSorted(arr, n);
 
