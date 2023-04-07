@@ -87,7 +87,7 @@ int main(){
 
   int n= 10000;
 
-  external_merge_sort_withstop("input.txt","output.txt",n,2,0);
+  external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,0);
 
 
   return 0;
