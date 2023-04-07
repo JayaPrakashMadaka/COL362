@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
 using namespace std;
 
 const int SIZE = 128;
@@ -44,46 +45,66 @@ bool search(struct TrieNode *root, string key){
     return ptr->end;
 }
 
-void preorder(TrieNode* node, string arr){
+void preorder(TrieNode* node, string arr ,ofstream &v)
+{
   if (node != NULL){
     for (int i = 0; i < SIZE; i++) {
       if(node->children[i] != NULL) {
         if(node->children[i]->end){
           for(int j=0;j<node->children[i]->count;j++){
-            cout << arr+string(1,(char)(i)) << "\n";
+            v << arr+string(1,(char)(i)) << "\n";
           }
         }
-        preorder(node->children[i], arr+string(1,(char)(i)));
+        preorder(node->children[i], arr+string(1,(char)(i)),v);
       }
     }
   }
 }
 
-void printSorted(char* input,char* output int n)
+void printSorted(const char* input,const char* output , int n)
 {
-    
+    ifstream infile(input);
+    string text;
     TrieNode* root = new TrieNode();
-    for (int i = 0; i < n; i++)
-        insert(root, arr[i]);
-    preorder(root, "");
+    for (int i = 0; i < n; i++){
+      if(getline (infile, text)) insert(root, text);
+    }
+    infile.close();
+    ofstream outfile(output);
+    preorder(root, "" ,outfile);
+    outfile.close();
 }
 
 
 int external_merge_sort_withstop(const char* input,const char* output,const long key_count,const int k=2,const int num_merges =0){
 
-  ifstream ifile(input);
-
-
-
+  printSorted(input,output,key_count);
 
   return num_merges;
 }
 
 int main(){
 
-  string arr[] = { "abcA", "!xy", "*bcd" ,"@abc","ahvs","@abc"};
-  int n = sizeof(arr) / sizeof(arr[0]);
-  printSorted(arr, n);
+  const int N = 10;
+  const int ASCII_MIN = 33;
+  const int ASCII_MAX = 126;
+
+  int n = 1000;
+  ofstream MyWriteFile("input.txt");
+
+  for(int i=0;i<n;i++){
+    string s;
+    for (int i = 0; i < N; i++) {
+      int c = rand() % (ASCII_MAX - ASCII_MIN + 1) + ASCII_MIN;
+      s.push_back((char) c);
+    }
+    MyWriteFile<<s+"\n";
+  }
+
+  MyWriteFile.close();
+
+  external_merge_sort_withstop("input.txt","output.txt",n,2,0);
+
 
   return 0;
 }
