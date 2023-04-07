@@ -2,8 +2,6 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <libproc.h>
-#include <unistd.h>
 using namespace std;
 
 const int SIZE = 128;
@@ -87,6 +85,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
+  int n= 10000;
 
   external_merge_sort_withstop("input.txt","output.txt",n,2,0);
 
