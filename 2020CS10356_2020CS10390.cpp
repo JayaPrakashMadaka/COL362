@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 const int SIZE = 128;
@@ -58,8 +59,9 @@ void preorder(TrieNode* node, string arr){
   }
 }
 
-void printSorted(string arr[], int n)
+void printSorted(char* input,char* output int n)
 {
+    
     TrieNode* root = new TrieNode();
     for (int i = 0; i < n; i++)
         insert(root, arr[i]);
@@ -67,7 +69,15 @@ void printSorted(string arr[], int n)
 }
 
 
-int external_merge_sort_withstop(const char* input,const char* output,const long key_count,const int k=2,const int num_merges =0);
+int external_merge_sort_withstop(const char* input,const char* output,const long key_count,const int k=2,const int num_merges =0){
+
+  ifstream ifile(input);
+
+
+
+
+  return num_merges;
+}
 
 int main(){
 
