@@ -11,7 +11,7 @@ int main(){
   const int ASCII_MAX = 126;
 
   int n = 1000;
-  ofstream MyWriteFile("jayaprakashmadaka/COL362/A3_data/input1.txt");
+  ofstream MyWriteFile("../A3_data/input.txt");
 
   for(int i=0;i<n;i++){
     string s;
