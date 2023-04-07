@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <libproc.h>
+#include <unistd.h>
 using namespace std;
 
 const int SIZE = 128;
@@ -85,7 +87,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
-  const int N = 200;
+  const int N = 100;
   const int ASCII_MIN = 33;
   const int ASCII_MAX = 126;
 
