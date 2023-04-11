@@ -144,62 +144,12 @@ int check_files(vector<int> &v){
 }
 
 void run(int file_count,int prev_level,int count){
-  vector<ifstream*> infiles;
+  vector<ifstream> infiles;
   for(int i=0;i<file_count;i++){
-    ifstream x("../A3_data/temp."+to_string(prev_level)+"."+to_string(i));
-    infiles.push_back(&x);
+    infiles.emplace_back("../A3_data/temp."+to_string(prev_level)+"."+to_string(i));
   }
   ofstream outfile("../A3_data/temp."+to_string(prev_level+1)+"."+to_string(count));
-  vector<int> check(file_count,0);
-  while(check_files(check)){
-    long in_memory = 0;
-    TrieNode* root = new TrieNode();
-    int i = 0;
-    while(in_memory < READ_BUFFER_SIZE && check_files(check)){
-      long per_in_memory = 0;
-      while(per_in_memory < READ_BUFFER_SIZE/file_count && !check[i] && in_memory < READ_BUFFER_SIZE){
-        string text;
-        if(getline(*infiles[i],text)){
-          insert(root,text,i);
-          i=(i+1)%file_count;
-          per_in_memory += text.size();
-          in_memory += text.size();
-        }
-        else{
-          check[i]=1;
-          i=(i+1)%file_count;
-          break;
-        }
-      }
-    }
-    while(root){
-      long out_memory = 0;
-      vector<string> write_out;
-      while (out_memory < WRITE_BUFFER_SIZE && check_files(check) && root) {
-        string val = getmin(root);
-        write_out.push_back(val);
-        out_memory += val.size();
-        int index = get<1>(remove(root,val,0));
-        string text;
-        if(getline(*infiles[index],text)){
-          insert(root,text,index);
-        }
-        else{
-          check[index]=1;
-        }
-      }
-      for(int i=0;i<write_out.size();i++){
-        outfile<<write_out[i]<<"\n";
-      }
-      //delete &write_out;
-    }
-  }
-
-  outfile.close();
-
-  for(int i=0;i<file_count;i++){
-    infiles[i]->close();
-  }
+  
 
 }
 
@@ -241,6 +191,7 @@ int main(){
   long n= 50000;
 
   external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,0);
+
 
 
   return 0;
