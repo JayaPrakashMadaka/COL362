@@ -13,12 +13,29 @@ const long READ_BUFFER_SIZE = 1*1024*1024;
 
 const long WRITE_BUFFER_SIZE = 512*1024;
 
+struct node{
+  int val;
+  struct node* next;
+  node(){
+    val = 0;
+    next = NULL;
+  }
+  node(int x){
+    val = x;
+    next = NULL;
+  }
+  node(int x,node* n){
+    val = x;
+    next = n;
+  }
+};
+
 struct TrieNode
 {
   struct TrieNode *children[SIZE];
   int count;
   bool end;
-  int index;
+  struct node* head;
   TrieNode()
     {
       for (int i = 0; i < SIZE; i++){
@@ -26,7 +43,7 @@ struct TrieNode
       }
       count = 0;
       end = false;
-      index = -1;
+      head = NULL;
     }
 };
 
@@ -40,19 +57,16 @@ void insert(struct TrieNode *root,string key,int index) {
   }
   ptr->end = true;
   ptr->count++;
-  ptr->index = index;
+  if(ptr->head == NULL){
+    node* n = new node(index);
+    ptr->head = n;
+  }
+  else{
+    node* n = new node(index,ptr->head);
+    ptr->head = n;
+  }
 }
 
-bool search(struct TrieNode *root, string key){
-    struct TrieNode *ptr = root;
-    for (int i = 0; i < key.size(); i++){
-        if (!ptr->children[key[i]]){
-            return false;
-        }
-        ptr = ptr->children[key[i]];
-    }
-    return ptr->end;
-}
 
 bool isEmpty(TrieNode* root)
 {
@@ -63,12 +77,12 @@ bool isEmpty(TrieNode* root)
 }
 
 string getmin(TrieNode* root){
-  if(!root){
+  if(!root || isEmpty(root)){
     return "";
   }
   for(int i=0;i<SIZE;i++){
     if(root->children[i]){
-      if(root->children[i]->end){
+      if(root->children[i] && root->children[i]->end){
         return string(1,(char)i);
       }
       return string(1,(char)i)+getmin(root->children[i]);
@@ -85,11 +99,18 @@ tuple<TrieNode*,int> remove(TrieNode* root, string key, int depth = 0)
     }
     if (depth == key.size()) {
         int index;
-        if (root->end)
+        if (root->end && root->count == 1){
+            root->count--;
             root->end = false;
-            index = root->index;
-            root->index = -1;
-        if (isEmpty(root)) {
+            index = root->head->val;
+            root->head = NULL;
+        }
+        if(root->end && root->count > 1){
+            root->count--;
+            index = root->head->val;
+            root->head = root->head->next;
+        }
+        if (isEmpty(root) && root->count == 0) {
             delete (root);
             root = NULL;
         }
@@ -150,6 +171,56 @@ void run(int file_count,int prev_level,int count){
   }
   ofstream outfile("../A3_data/temp."+to_string(prev_level+1)+"."+to_string(count));
 
+  vector<int> check(file_count,0);
+
+  while(check_files(check)){
+    long in_memory = 0;
+    TrieNode* root = new TrieNode();
+    int i = 0;
+    while(in_memory < READ_BUFFER_SIZE && check_files(check)){
+      long per_in_memory = 0;
+      while(per_in_memory < READ_BUFFER_SIZE/file_count && !check[i] && in_memory < READ_BUFFER_SIZE){
+        string text;
+        if(getline(infiles[i],text)){
+          insert(root,text,i);
+          per_in_memory += text.size();
+          in_memory += text.size();
+        }
+        else{
+          check[i]=1;
+          break;
+        }
+      }
+      i=(i+1)%file_count;
+    }
+    while(!isEmpty(root)){
+      long out_memory = 0;
+      vector<string> out_buffer;
+      while(out_memory < WRITE_BUFFER_SIZE && !isEmpty(root)){
+        string val = getmin(root);
+        out_buffer.push_back(val);
+        out_memory += val.size();
+        int index = get<1>(remove(root,val,0));
+        string text;
+        if(!check[index]){
+          if(getline(infiles[index],text)){
+            insert(root,text,index);
+          }
+          else{
+            check[index]=1;
+          }
+        }
+        /*try{
+          getline(infiles[index],text);
+          insert(root,text,index);
+        }
+        catch(exception &ex){}*/
+      }
+      for(int i=0;i<out_buffer.size();i++){
+        outfile<<out_buffer[i]<<"\n";
+      }
+    }
+  }
 
 }
 
@@ -169,7 +240,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     while(memory < BUFFER_SIZE && words < key_count){
       string text;
       if(getline(infile,text)){
-        insert(root,text,-1);
+        insert(root,text);
         memory += text.size();
         words++;
       }
@@ -191,7 +262,6 @@ int main(){
   long n= 50000;
 
   external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,0);
-
 
 
   return 0;
