@@ -149,7 +149,7 @@ void run(int file_count,int prev_level,int count){
     infiles.emplace_back("../A3_data/temp."+to_string(prev_level)+"."+to_string(i));
   }
   ofstream outfile("../A3_data/temp."+to_string(prev_level+1)+"."+to_string(count));
-  
+
 
 }
 
