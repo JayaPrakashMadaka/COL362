@@ -168,14 +168,16 @@ bool check_files(vector<bool> &v){
   return false;
 }
 
-void run(int file_count, int level, int count) {
+void run(int file_count, int prev_level,int start, int ret) {
   vector<ifstream> infiles;
-  for (int i = 0; i < file_count; i++) {
-    infiles.emplace_back("../A3_data/temp." + to_string(level-1) + "." + to_string(i));
+  for (int i = start; i < start+file_count; i++) {
+    infiles.emplace_back("../A3_data/temp." + to_string(prev_level) + "." + to_string(i));
   }
-  ofstream outfile("../A3_data/temp." + to_string(level) + "." + to_string(count));
+  ofstream outfile("../A3_data/temp." + to_string(prev_level+1) + "." + to_string(ret));
 
   vector<bool> check(file_count, false);
+
+  int x =0;
 
   while (check_files(check)) {
     long in_memory = 0;
@@ -218,11 +220,15 @@ void run(int file_count, int level, int count) {
       }
       for (int i = 0; i < out_buffer.size(); i++) {
         outfile << out_buffer[i] << "\n";
+        x++;
       }
       out_buffer.clear();
     }
     delete root;
   }
+
+  cout << prev_level+1 << "." << ret << " : "<<x<<"\n";
+
 }
 
 
@@ -252,18 +258,34 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     outfile.close();
     delete root;
     number_runs++;
+    cout<<words<<"\n";
   }
 
-  run(k,1,0);
+  for(int i=0;i<num_merges;i++){
+    int x = number_runs/k;
+    int y = number_runs%k;
+    int s = 0;
+    for(int j=0;j<x;j++){
+      run(k,i,s,j);
+      s+=k;
+    }
+    if(y!=0){
+      run(y,i,s,x);
+      number_runs=x+1;
+    }
+    else{
+      number_runs = x;
+    }
+  }
 
   return num_merges;
 }
 
 int main(){
 
-  long n= 30000;
+  long n= 50000;
 
-  external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,0);
+  external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,3);
 
 
   return 0;
