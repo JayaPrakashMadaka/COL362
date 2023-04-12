@@ -19,9 +19,9 @@ struct Compare
   bool operator()(const tuple<string,int> &a, const tuple<string,int> &b)
   {
     if(get<0>(a) == get<0>(b)){
-      return get<1>(a) < get<1>(b);
+      return get<1>(a) > get<1>(b);
     }
-    return get<0>(a) < get<0>(b);
+    return get<0>(a) > get<0>(b);
   }
 };
 
@@ -32,12 +32,19 @@ bool check_files(vector<bool> &v){
   return false;
 }
 
-void run(int file_count, int prev_level,int start, int ret) {
+void run(int file_count, int prev_level,int start, int ret,bool finish) {
   vector<ifstream> infiles;
   for (int i = start; i < start+file_count; i++) {
     infiles.emplace_back("../A3_data/temp." + to_string(prev_level) + "." + to_string(i));
   }
-  ofstream outfile("../A3_data/temp." + to_string(prev_level+1) + "." + to_string(ret));
+  string out_file;
+  if(finish){
+    out_file = "../A3_data/Output.txt";
+  }
+  else{
+    out_file = "../A3_data/temp." + to_string(prev_level+1) + "." + to_string(ret);
+  }
+  ofstream outfile(out_file);
 
   vector<bool> check(file_count, false);
 
@@ -132,19 +139,24 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     int x = number_runs/k;
     int y = number_runs%k;
     int s = 0;
-    for(int j=0;j<x;j++){
-      run(k,i,s,j);
-      s+=k;
-    }
-    if(y!=0){
-      run(y,i,s,x);
-      number_runs=x+1;
+    if(x==1 && y==0){
+      run(k,i,s,0,true);
+      break;
     }
     else{
-      number_runs = x;
+      for(int j=0;j<x;j++){
+        run(k,i,s,j,false);
+        s+=k;
+      }
+      if(y!=0){
+        run(y,i,s,x,false);
+        number_runs=x+1;
+      }
+      else{
+        number_runs = x;
+      }
     }
   }
-
   return num_merges;
 }
 
