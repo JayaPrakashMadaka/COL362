@@ -14,7 +14,7 @@ const long READ_BUFFER_SIZE = 1*1024*1024;
 const long WRITE_BUFFER_SIZE = 512*1024;
 
 struct node{
-  int val;
+  short val;
   struct node* next;
   node(){
     val = 0;
@@ -33,7 +33,7 @@ struct node{
 struct TrieNode
 {
   struct TrieNode *children[SIZE];
-  int count;
+  short count;
   bool end;
   struct node* head;
   TrieNode()
@@ -47,7 +47,7 @@ struct TrieNode
     }
 };
 
-void insert(struct TrieNode *root,string key,int index) {
+void insert(struct TrieNode *root,string key,short index) {
   struct TrieNode *ptr = root;
   for(int i=0;i<key.size();i++){
     if(!ptr->children[key[i]]){
@@ -70,35 +70,38 @@ void insert(struct TrieNode *root,string key,int index) {
 
 bool isEmpty(TrieNode* root)
 {
+    if (!root) return true;
     for (int i = 0; i < SIZE; i++)
         if (root->children[i])
             return false;
     return true;
 }
 
+
 string getmin(TrieNode* root){
-  if(!root || isEmpty(root)){
+  if(!root){
     return "";
   }
   for(int i=0;i<SIZE;i++){
     if(root->children[i]){
-      if(root->children[i] && root->children[i]->end){
+      if(root->children[i]->end){
         return string(1,(char)i);
       }
-      return string(1,(char)i)+getmin(root->children[i]);
+      return string(1,(char)i) + getmin(root->children[i]);
     }
   }
   return "";
 }
 
-tuple<TrieNode*,int> remove(TrieNode* root, string key, int depth = 0)
+
+tuple<TrieNode*,short> remove(TrieNode* root, string key, int depth = 0)
 {
     if (!root){
         TrieNode* val = NULL;
         return make_tuple(val,-1);
     }
     if (depth == key.size()) {
-        int index;
+        short index = -1;
         if (root->end && root->count == 1){
             root->count--;
             root->end = false;
@@ -116,7 +119,7 @@ tuple<TrieNode*,int> remove(TrieNode* root, string key, int depth = 0)
         }
         return make_tuple(root,index);
     }
-    int index = key[depth];
+    short index = key[depth];
     tuple<TrieNode*,int> t = remove(root->children[index], key, depth + 1);
     root->children[index] = get<0>(t);
     int val = get<1>(t);
@@ -126,6 +129,7 @@ tuple<TrieNode*,int> remove(TrieNode* root, string key, int depth = 0)
     }
     return make_tuple(root,val);
 }
+
 
 void preorder(TrieNode* node, string arr ,ofstream &v)
 {
@@ -157,72 +161,70 @@ void printSorted(const char* input,const char* output ,int begin, int n)
     outfile.close();
 }
 
-int check_files(vector<int> &v){
+bool check_files(vector<bool> &v){
   for(int i=0;i<v.size();i++){
-    if(v[i]==0) return 1;
+    if(v[i]==false) return true;
   }
-  return 0;
+  return false;
 }
 
-void run(int file_count,int prev_level,int count){
+void run(int file_count, int level, int count) {
   vector<ifstream> infiles;
-  for(int i=0;i<file_count;i++){
-    infiles.emplace_back("../A3_data/temp."+to_string(prev_level)+"."+to_string(i));
+  for (int i = 0; i < file_count; i++) {
+    infiles.emplace_back("../A3_data/temp." + to_string(level-1) + "." + to_string(i));
   }
-  ofstream outfile("../A3_data/temp."+to_string(prev_level+1)+"."+to_string(count));
+  ofstream outfile("../A3_data/temp." + to_string(level) + "." + to_string(count));
 
-  vector<int> check(file_count,0);
+  vector<bool> check(file_count, false);
 
-  while(check_files(check)){
+  while (check_files(check)) {
     long in_memory = 0;
     TrieNode* root = new TrieNode();
     int i = 0;
-    while(in_memory < READ_BUFFER_SIZE && check_files(check)){
+    while (in_memory < READ_BUFFER_SIZE && check_files(check)) {
       long per_in_memory = 0;
-      while(per_in_memory < READ_BUFFER_SIZE/file_count && !check[i] && in_memory < READ_BUFFER_SIZE){
+      while (per_in_memory < READ_BUFFER_SIZE / file_count && !check[i] && in_memory < READ_BUFFER_SIZE) {
         string text;
-        if(getline(infiles[i],text)){
-          insert(root,text,i);
+        if (getline(infiles[i], text)) {
+          insert(root, text, i);
           per_in_memory += text.size();
           in_memory += text.size();
-        }
-        else{
-          check[i]=1;
+        } else {
+          check[i] = true;
           break;
         }
       }
-      i=(i+1)%file_count;
+      i = (i + 1) % file_count;
     }
-    while(!isEmpty(root)){
+    while (!isEmpty(root)) {
       long out_memory = 0;
       vector<string> out_buffer;
-      while(out_memory < WRITE_BUFFER_SIZE && !isEmpty(root)){
+      while (out_memory < WRITE_BUFFER_SIZE && !isEmpty(root)) {
         string val = getmin(root);
         out_buffer.push_back(val);
         out_memory += val.size();
-        int index = get<1>(remove(root,val,0));
+        short index;
+        tuple<TrieNode*, short> t = remove(root, val, 0);
+        root = get<0>(t);
+        index = get<1>(t);
         string text;
-        if(!check[index]){
-          if(getline(infiles[index],text)){
-            insert(root,text,index);
-          }
-          else{
-            check[index]=1;
+        if (!check[index]) {
+          if (getline(infiles[index], text)) {
+            insert(root, text, index);
+          } else {
+            check[index] = true;
           }
         }
-        /*try{
-          getline(infiles[index],text);
-          insert(root,text,index);
-        }
-        catch(exception &ex){}*/
       }
-      for(int i=0;i<out_buffer.size();i++){
-        outfile<<out_buffer[i]<<"\n";
+      for (int i = 0; i < out_buffer.size(); i++) {
+        outfile << out_buffer[i] << "\n";
       }
+      out_buffer.clear();
     }
+    delete root;
   }
-
 }
+
 
 
 int external_merge_sort_withstop(const char* input,const char* output,const long key_count,const int k=2,const int num_merges =0){
@@ -233,14 +235,14 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
   int number_runs = 0;
 
-  /*while(words < key_count){
+  while(words < key_count){
     long memory = 0;
     long count = 0;
     TrieNode* root = new TrieNode();
     while(memory < BUFFER_SIZE && words < key_count){
       string text;
       if(getline(infile,text)){
-        insert(root,text);
+        insert(root,text,-1);
         memory += text.size();
         words++;
       }
@@ -250,16 +252,16 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     outfile.close();
     delete root;
     number_runs++;
-  }*/
+  }
 
-  run(k,0,0);
+  run(k,1,0);
 
   return num_merges;
 }
 
 int main(){
 
-  long n= 50000;
+  long n= 30000;
 
   external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,0);
 
