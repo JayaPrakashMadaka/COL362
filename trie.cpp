@@ -291,6 +291,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         if(y!=0 && count < num_merges){
           run(y,i,s,x,false);
           number_runs=x+1;
+          count++;
         }
         else{
           number_runs = x;
@@ -334,7 +335,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,2);
+  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,0);
 
 
   return 0;
