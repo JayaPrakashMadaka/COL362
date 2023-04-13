@@ -71,13 +71,13 @@ void run(int file_count, int prev_level,int start, int ret,bool finish) {
     }
     while (!pq.empty()) {
       long out_memory = 0;
-      vector<string> out_buffer;
+      queue<string> out_buffer;
       while (out_memory < WRITE_BUFFER_SIZE && !pq.empty()) {
         tuple<string, int> t = pq.top();
         pq.pop();
         string val = get<0>(t);
         int index = get<1>(t);
-        out_buffer.push_back(val);
+        out_buffer.push(val);
         out_memory += val.size();
         string text;
         if (!check[index]) {
@@ -88,11 +88,11 @@ void run(int file_count, int prev_level,int start, int ret,bool finish) {
           }
         }
       }
-      for (int i = 0; i < out_buffer.size(); i++) {
-        outfile << out_buffer[i] << "\n";
+      while(!out_buffer.empty()) {
+        outfile << out_buffer.front() << "\n";
+        out_buffer.pop();
         x++;
       }
-      out_buffer.clear();
     }
   }
 
