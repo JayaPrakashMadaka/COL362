@@ -175,28 +175,64 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
   }
 
   int i = 0;
-  while(true){
-    int x = number_runs/k;
-    int y = number_runs%k;
-    int s = 0;
-    if(x==1 && y==0){
-      run(k,i,s,0,true);
-      break;
-    }
-    else{
-      for(int j=0;j<x;j++){
-        run(k,i,s,j,false);
-        s+=k;
-      }
-      if(y!=0){
-        run(y,i,s,x,false);
-        number_runs=x+1;
+  if(num_merges != 0){
+    int count = 0;
+    while(count < num_merges){
+      int x = number_runs/k;
+      int y = number_runs%k;
+      int s = 0;
+      if(x==1 && y==0){
+        run(k,i,s,0,true);
+        count++;
+        break;
       }
       else{
-        number_runs = x;
+        int j = 0;
+        while(j<x && count < num_merges){
+          run(k,i,s,j,false);
+          s+=k;
+          count++;
+          j++;
+        }
+        if(y!=0 && count < num_merges){
+          run(y,i,s,x,false);
+          number_runs=x+1;
+          count++;
+        }
+        else{
+          number_runs = x;
+        }
       }
+      i++;
     }
-    i++;
+    return num_merges;
+  }
+  else{
+    int i = 0;
+    while(true){
+      int x = number_runs/k;
+      int y = number_runs%k;
+      int s = 0;
+      if(x==1 && y==0){
+        run(k,i,s,0,true);
+        break;
+      }
+      else{
+        for(int j=0;j<x;j++){
+          run(k,i,s,j,false);
+          s+=k;
+        }
+        if(y!=0){
+          run(y,i,s,x,false);
+          number_runs=x+1;
+        }
+        else{
+          number_runs = x;
+        }
+      }
+      i++;
+    }
+    return num_merges;
   }
   return num_merges;
 }
@@ -205,7 +241,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,0);
+  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,1);
 
 
   return 0;
