@@ -7,11 +7,11 @@ using namespace std;
 
 const int SIZE = 128;
 
-const long BUFFER_SIZE = 1*1024*1024;
+const long BUFFER_SIZE = 5*1024*1024;
 
-const long READ_BUFFER_SIZE = 1*1024*1024;
+const long READ_BUFFER_SIZE = 5*1024*1024;
 
-const long WRITE_BUFFER_SIZE = 512*1024;
+const long WRITE_BUFFER_SIZE = 5*512*1024;
 
 struct node{
   short val;
@@ -171,14 +171,14 @@ bool check_files(vector<bool> &v){
 void run(int file_count, int prev_level,int start, int ret,bool finish) {
   vector<ifstream> infiles;
   for (int i = start; i < start+file_count; i++) {
-    infiles.emplace_back("../A3_data/temp." + to_string(prev_level) + "." + to_string(i));
+    infiles.emplace_back("../A3_data_output/temp." + to_string(prev_level) + "." + to_string(i));
   }
   string out_file;
   if(finish){
-    out_file = "../A3_data/Output.txt";
+    out_file = "../A3_data_output/Output.txt";
   }
   else{
-    out_file = "../A3_data/temp." + to_string(prev_level+1) + "." + to_string(ret);
+    out_file = "../A3_data_output/temp." + to_string(prev_level+1) + "." + to_string(ret);
   }
   ofstream outfile(out_file);
 
@@ -260,7 +260,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         words++;
       }
     }
-    ofstream outfile("../A3_data/temp.0."+to_string(number_runs));
+    ofstream outfile("../A3_data_output/temp.0."+to_string(number_runs));
     preorder(root,"",outfile);
     outfile.close();
     delete root;
@@ -268,7 +268,8 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     cout<<words<<"\n";
   }
 
-  for(int i=0;i<num_merges;i++){
+  int i = 0;
+  while(true){
     int x = number_runs/k;
     int y = number_runs%k;
     int s = 0;
@@ -289,6 +290,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         number_runs = x;
       }
     }
+    i++;
   }
 
   return num_merges;
@@ -296,9 +298,9 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
-  long n= 50000;
+  long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/input.txt","../A3_data/output.txt",n,2,3);
+  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,0);
 
 
   return 0;
