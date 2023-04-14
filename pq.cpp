@@ -208,21 +208,25 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
   }
   else{
     int i = 0;
+    int count =0;
     while(true){
       int x = number_runs/k;
       int y = number_runs%k;
       int s = 0;
       if(x==1 && y==0){
         run(k,i,s,0,true);
+        count++;
         break;
       }
       else{
         for(int j=0;j<x;j++){
           run(k,i,s,j,false);
+          count++;
           s+=k;
         }
         if(y!=0){
           run(y,i,s,x,false);
+          count++;
           number_runs=x+1;
         }
         else{
@@ -231,7 +235,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
       }
       i++;
     }
-    return num_merges;
+    return count;
   }
   return num_merges;
 }
