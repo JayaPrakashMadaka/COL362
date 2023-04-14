@@ -3,6 +3,7 @@
 #include <fstream>
 #include <tuple>
 #include <queue>
+#include <stack>
 using namespace std;
 
 const int SIZE = 128;
@@ -13,49 +14,6 @@ const long READ_BUFFER_SIZE = 5*1024*1024;
 
 const long WRITE_BUFFER_SIZE = 5*512*1024;
 
-struct TrieNode
-{
-  struct TrieNode *children[SIZE];
-  short count;
-  bool end;
-  TrieNode()
-    {
-      for (int i = 0; i < SIZE; i++){
-            children[i] = NULL;
-      }
-      count = 0;
-      end = false;
-    }
-};
-
-void insert(struct TrieNode *root,string key) {
-  struct TrieNode *ptr = root;
-  for(int i=0;i<key.size();i++){
-    if(!ptr->children[key[i]]){
-      ptr->children[key[i]] = new TrieNode();
-    }
-    ptr = ptr->children[key[i]];
-  }
-  ptr->end = true;
-  ptr->count++;
-}
-
-
-void preorder(TrieNode* node, string arr ,ofstream &v)
-{
-  if (node != NULL){
-    for (int i = 0; i < SIZE; i++) {
-      if(node->children[i] != NULL) {
-        if(node->children[i]->end){
-          for(int j=0;j<node->children[i]->count;j++){
-            v << arr+string(1,(char)(i)) << "\n";
-          }
-        }
-        preorder(node->children[i], arr+string(1,(char)(i)),v);
-      }
-    }
-  }
-}
 
 struct Compare
 {
@@ -65,6 +23,14 @@ struct Compare
       return get<1>(a) > get<1>(b);
     }
     return get<0>(a) > get<0>(b);
+  }
+};
+
+struct Compare1
+{
+  bool operator()(const string &a, const string &b)
+  {
+    return a > b;
   }
 };
 
@@ -156,19 +122,21 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
   while(words < key_count){
     long memory = 0;
     long count = 0;
-    TrieNode* root = new TrieNode();
+    priority_queue<string,vector<string>,Compare1> pq;
     while(memory < BUFFER_SIZE && words < key_count){
       string text;
       if(getline(infile,text)){
-        insert(root,text);
+        pq.push(text);
         memory += text.size();
         words++;
       }
     }
     ofstream outfile("../A3_data_output/temp.0."+to_string(number_runs));
-    preorder(root,"",outfile);
+    while(!pq.empty()){
+      outfile<<pq.top()<<"\n";
+      pq.pop();
+    }
     outfile.close();
-    delete root;
     number_runs++;
     cout<<words<<"\n";
   }
