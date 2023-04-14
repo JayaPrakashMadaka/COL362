@@ -6,13 +6,11 @@
 #include <stack>
 using namespace std;
 
-const int SIZE = 128;
+const long BUFFER_SIZE = 100*1024*1024;
 
-const long BUFFER_SIZE = 5*1024*1024;
+const long READ_BUFFER_SIZE = 100*1024*1024;
 
-const long READ_BUFFER_SIZE = 5*1024*1024;
-
-const long WRITE_BUFFER_SIZE = 5*512*1024;
+const long WRITE_BUFFER_SIZE = 100*512*1024;
 
 
 struct Compare
@@ -41,14 +39,14 @@ bool check_files(vector<bool> &v){
   return false;
 }
 
-void run(int file_count, int prev_level,int start, int ret,bool finish) {
+void run(int file_count, int prev_level,int start, int ret,bool finish,const char* output) {
   vector<ifstream> infiles;
   for (int i = start; i < start+file_count; i++) {
     infiles.emplace_back("../A3_data_output/temp." + to_string(prev_level) + "." + to_string(i));
   }
   string out_file;
   if(finish){
-    out_file = "../A3_data_output/Output.txt";
+    out_file = output;
   }
   else{
     out_file = "../A3_data_output/temp." + to_string(prev_level+1) + "." + to_string(ret);
@@ -148,21 +146,26 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
       int x = number_runs/k;
       int y = number_runs%k;
       int s = 0;
-      if(x==1 && y==0){
-        run(k,i,s,0,true);
+      if(x==0 && y < k){
+        run(y,i,s,0,true,output);
+        count++;
+        break;
+      }
+      else if(x==1 && y==0){
+        run(k,i,s,0,true,output);
         count++;
         break;
       }
       else{
         int j = 0;
         while(j<x && count < num_merges){
-          run(k,i,s,j,false);
+          run(k,i,s,j,false,output);
           s+=k;
           count++;
           j++;
         }
         if(y!=0 && count < num_merges){
-          run(y,i,s,x,false);
+          run(y,i,s,x,false,output);
           number_runs=x+1;
           count++;
         }
@@ -181,19 +184,24 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
       int x = number_runs/k;
       int y = number_runs%k;
       int s = 0;
-      if(x==1 && y==0){
-        run(k,i,s,0,true);
+      if(x==0 && y < k){
+        run(y,i,s,0,true,output);
+        count++;
+        break;
+      }
+      else if(x==1 && y==0){
+        run(k,i,s,0,true,output);
         count++;
         break;
       }
       else{
         for(int j=0;j<x;j++){
-          run(k,i,s,j,false);
+          run(k,i,s,j,false,output);
           count++;
           s+=k;
         }
         if(y!=0){
-          run(y,i,s,x,false);
+          run(y,i,s,x,false,output);
           count++;
           number_runs=x+1;
         }
@@ -210,9 +218,9 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
-  long n= 1000000;
+  long n= 983860;
 
-  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,0);
+  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,2,0);
 
 
   return 0;
