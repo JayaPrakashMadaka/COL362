@@ -212,7 +212,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,4);
+  external_merge_sort_withstop("../A3_data/english-subset.txt","../A3_data_output/output.txt",n,2,0);
 
 
   return 0;
