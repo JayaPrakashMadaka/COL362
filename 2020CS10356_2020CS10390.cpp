@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 struct Compare
 {
   bool operator()(const tuple<string,int> &a, const tuple<string,int> &b)
