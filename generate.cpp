@@ -10,7 +10,7 @@ int main(){
   const int ASCII_MIN = 33;
   const int ASCII_MAX = 126;
 
-  int n = 1000;
+  int n = 1000000000;
   ofstream MyWriteFile("../A3_data/input.txt");
 
   for(int i=0;i<n;i++){
