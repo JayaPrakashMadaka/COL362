@@ -11,11 +11,11 @@
 #	g++ -g -c pq.cpp -O3 -o pq.o
 
 
-all: final.o
-	g++ -g -O3 final.o -o exec
+all: 2020CS10356_2020CS10390.o
+	g++ -g -O3 2020CS10356_2020CS10390.o -o exec
 
-final.o: final.cpp
-	g++ -g -c final.cpp -O3 -o final.o
+2020CS10356_2020CS10390.o: 2020CS10356_2020CS10390.cpp
+	g++ -g -c 2020CS10356_2020CS10390.cpp -O3 -o 2020CS10356_2020CS10390.o
 
 clean:
 	rm *.o exec
