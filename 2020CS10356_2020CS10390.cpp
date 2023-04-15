@@ -33,7 +33,7 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
   vector<ifstream> infiles;
 
   for (int i = start; i < start+file_count; i++) {
-    infiles.emplace_back("../A3_data_output/temp." + to_string(prev_level) + "." + to_string(i));
+    infiles.emplace_back("temp." + to_string(prev_level) + "." + to_string(i));
   }
 
   string out = string(out_file);
@@ -106,7 +106,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         words++;
       }
     }
-    ofstream outfile("../A3_data_output/temp.0."+to_string(number_runs));
+    ofstream outfile("temp.0."+to_string(number_runs));
     sort(pq.begin(),pq.end());
     for(int i=0;i<pq.size();i++){
       outfile<<pq[i]<<"\n";
@@ -137,7 +137,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     else{
       int j = 0;
       while(j<x && condition(count,num_merges)){
-        string val = "../A3_data_output/temp."+to_string(level+1)+"."+to_string(j);
+        string val = "temp."+to_string(level+1)+"."+to_string(j);
         const char* out_file = val.c_str();
         merge(k,level,s,out_file);
         count++;
@@ -145,7 +145,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         j++;
       }
       if(y!=0 && condition(count,num_merges)){
-        string val = "../A3_data_output/temp."+to_string(level+1)+"."+to_string(x);
+        string val = "temp."+to_string(level+1)+"."+to_string(x);
         const char* out_file = val.c_str();
         merge(y,level,s,out_file);
         s+=y;
@@ -166,7 +166,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,16,0);
+  external_merge_sort_withstop("english-subset.txt","output.txt",n,16,0);
 
 
   return 0;
