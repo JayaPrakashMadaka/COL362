@@ -40,10 +40,13 @@ bool check_files(vector<bool> &v){
 }
 
 void run(int file_count, int prev_level,int start, int ret,bool finish,const char* output) {
+
   vector<ifstream> infiles;
+
   for (int i = start; i < start+file_count; i++) {
     infiles.emplace_back("../A3_data_output/temp." + to_string(prev_level) + "." + to_string(i));
   }
+  
   string out_file;
   if(finish){
     out_file = output;
