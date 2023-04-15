@@ -1,15 +1,9 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <tuple>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 
-const long BUFFER_SIZE = 100*1024*1024;
+const long BUFFER_SIZE = 500*1024*1024;
 
-const long READ_BUFFER_SIZE = 100*1024*1024;
-
-const long WRITE_BUFFER_SIZE = 100*512*1024;
+const long WRITE_BUFFER_SIZE = 500*1024*1024;
 
 
 struct Compare
@@ -20,14 +14,6 @@ struct Compare
       return get<1>(a) > get<1>(b);
     }
     return get<0>(a) > get<0>(b);
-  }
-};
-
-struct Compare1
-{
-  bool operator()(const string &a, const string &b)
-  {
-    return a > b;
   }
 };
 
@@ -62,27 +48,18 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
 
   int x =0;
 
-
-
   while (check_files(check)) {
 
     long in_memory = 0;
     priority_queue<tuple<string, int>, vector<tuple<string, int>>, Compare> pq;
-    int i = 0;
-    while (in_memory < READ_BUFFER_SIZE && check_files(check)) {
-      long per_in_memory = 0;
-      while (per_in_memory < READ_BUFFER_SIZE / file_count && !check[i] && in_memory < READ_BUFFER_SIZE) {
-        string text;
-        if (getline(infiles[i], text)) {
-          pq.push(make_tuple(text,i));
-          per_in_memory += text.size();
-          in_memory += text.size();
-        } else {
-          check[i] = true;
-          break;
-        }
+    for(int i=0;i<file_count;i++){
+      string text;
+      if(getline(infiles[i],text)){
+        pq.push(make_tuple(text,i));
       }
-      i = (i + 1) % file_count;
+      else{
+        check[i]=1;
+      }
     }
     while (!pq.empty()) {
       long out_memory = 0;
@@ -129,20 +106,21 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
   while(words < key_count){
     long memory = 0;
     long count = 0;
-    priority_queue<string,vector<string>,Compare1> pq;
+    vector<string> pq;
     while(memory < BUFFER_SIZE && words < key_count){
       string text;
       if(getline(infile,text)){
-        pq.push(text);
+        pq.push_back(text);
         memory += text.size();
         words++;
       }
     }
     ofstream outfile("../A3_data_output/temp.0."+to_string(number_runs));
-    while(!pq.empty()){
-      outfile<<pq.top()<<"\n";
-      pq.pop();
+    sort(pq.begin(),pq.end());
+    for(int i=0;i<pq.size();i++){
+      outfile<<pq[i]<<"\n";
     }
+    pq.clear();
     outfile.close();
     number_runs++;
     cout<<words<<"\n";
@@ -196,9 +174,9 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
 
 int main(){
 
-  long n= 983860;
+  long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,2,1);
+  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,4,0);
 
 
   return 0;
