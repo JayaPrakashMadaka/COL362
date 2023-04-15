@@ -59,7 +59,7 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
     while (!pq.empty()) {
       long out_memory = 0;
       queue<string> out_buffer;
-      while (out_memory < 500*1024*1024 && !pq.empty()) {
+      while (out_memory < 800*1024*1024 && !pq.empty()) {
         tuple<string, int> t = pq.top();
         pq.pop();
         string val = get<0>(t);
@@ -104,7 +104,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     long memory = 0;
     long count = 0;
     vector<string> pq;
-    while(memory < 500*1024*1024 && words < key_count){
+    while(memory < 800*1024*1024 && words < key_count){
       string text;
       if(getline(infile,text)){
         pq.push_back(text);
@@ -167,14 +167,4 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
   }
   return count;
 
-}
-
-int main(){
-
-  long n= 1000000;
-
-  external_merge_sort_withstop("random.txt","output.txt",n,16,0);
-
-
-  return 0;
 }
