@@ -39,6 +39,8 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
 
   ofstream outfile(out);
 
+  bool jp = true;
+
   vector<bool> check(file_count, false);
 
   while (check_files(check)) {
@@ -74,7 +76,12 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
         }
       }
       while(!out_buffer.empty()) {
-        outfile << out_buffer.front() << "\n";
+        if(jp){
+          outfile<<out_buffer.front();
+          out_buffer.pop();
+          jp = false;
+        }
+        outfile <<"\n"<< out_buffer.front();
         out_buffer.pop();
       }
     }
@@ -107,8 +114,9 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     }
     ofstream outfile("temp.0."+to_string(number_runs));
     sort(pq.begin(),pq.end());
-    for(int i=0;i<pq.size();i++){
-      outfile<<pq[i]<<"\n";
+    if(pq.size()>0) outfile<<pq[0];
+    for(int i=1;i<pq.size();i++){
+      outfile<<'\n'<<pq[i];
     }
     pq.clear();
     outfile.close();
@@ -165,7 +173,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("english-subset.txt","output.txt",n,16,0);
+  external_merge_sort_withstop("random.txt","output.txt",n,16,0);
 
 
   return 0;
