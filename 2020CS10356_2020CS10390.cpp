@@ -1,10 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const long BUFFER_SIZE = 500*1024*1024;
-
-const long WRITE_BUFFER_SIZE = 500*1024*1024;
-
 
 struct Compare
 {
@@ -62,7 +58,7 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
     while (!pq.empty()) {
       long out_memory = 0;
       queue<string> out_buffer;
-      while (out_memory < WRITE_BUFFER_SIZE && !pq.empty()) {
+      while (out_memory < 500*1024*1024 && !pq.empty()) {
         tuple<string, int> t = pq.top();
         pq.pop();
         string val = get<0>(t);
@@ -102,7 +98,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     long memory = 0;
     long count = 0;
     vector<string> pq;
-    while(memory < BUFFER_SIZE && words < key_count){
+    while(memory < 500*1024*1024 && words < key_count){
       string text;
       if(getline(infile,text)){
         pq.push_back(text);
