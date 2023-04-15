@@ -32,7 +32,7 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
   vector<ifstream> infiles;
 
   for (int i = start; i < start+file_count; i++) {
-    infiles.emplace_back("temp." + to_string(prev_level) + "." + to_string(i));
+    infiles.emplace_back("temp." + to_string(prev_level) + "." + to_string(i+1));
   }
 
   string out = string(out_file);
@@ -59,7 +59,7 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
     while (!pq.empty()) {
       long out_memory = 0;
       queue<string> out_buffer;
-      while (out_memory < 800*1024*1024 && !pq.empty()) {
+      while (out_memory < 1*1024*1024 && !pq.empty()) {
         tuple<string, int> t = pq.top();
         pq.pop();
         string val = get<0>(t);
@@ -104,7 +104,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     long memory = 0;
     long count = 0;
     vector<string> pq;
-    while(memory < 800*1024*1024 && words < key_count){
+    while(memory < 1*1024*1024 && words < key_count){
       string text;
       if(getline(infile,text)){
         pq.push_back(text);
@@ -112,7 +112,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         words++;
       }
     }
-    ofstream outfile("temp.0."+to_string(number_runs));
+    ofstream outfile("temp.0."+to_string(number_runs+1));
     sort(pq.begin(),pq.end());
     if(pq.size()>0) outfile<<pq[0];
     for(int i=1;i<pq.size();i++){
@@ -144,7 +144,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     else{
       int j = 0;
       while(j<x && condition(count,num_merges)){
-        string val = "temp."+to_string(level+1)+"."+to_string(j);
+        string val = "temp."+to_string(level+1)+"."+to_string(j+1);
         const char* out_file = val.c_str();
         merge(k,level,s,out_file);
         count++;
@@ -152,7 +152,7 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
         j++;
       }
       if(y!=0 && condition(count,num_merges)){
-        string val = "temp."+to_string(level+1)+"."+to_string(x);
+        string val = "temp."+to_string(level+1)+"."+to_string(x+1);
         const char* out_file = val.c_str();
         merge(y,level,s,out_file);
         s+=y;
