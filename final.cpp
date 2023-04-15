@@ -46,8 +46,6 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
 
   vector<bool> check(file_count, false);
 
-  int x =0;
-
   while (check_files(check)) {
 
     long in_memory = 0;
@@ -83,12 +81,9 @@ void merge(int file_count,int prev_level,int start,const char* out_file){
       while(!out_buffer.empty()) {
         outfile << out_buffer.front() << "\n";
         out_buffer.pop();
-        x++;
       }
     }
   }
-
-  cout << out << " : "<<x<<"\n";
 
 }
 
@@ -123,7 +118,6 @@ int external_merge_sort_withstop(const char* input,const char* output,const long
     pq.clear();
     outfile.close();
     number_runs++;
-    cout<<words<<"\n";
   }
 
   //Merging along with levels
@@ -176,7 +170,7 @@ int main(){
 
   long n= 1000000;
 
-  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,4,0);
+  external_merge_sort_withstop("../A3_data/random.txt","../A3_data_output/output.txt",n,16,0);
 
 
   return 0;
